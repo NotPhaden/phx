@@ -1,0 +1,240 @@
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Factiuni - PHX</title>
+  <link rel="icon" type="image/png" href="logo.png">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#0b0b0b;
+      --card:#1f1b24;
+      --muted:#a9a4b1;
+      --accent:#6f4bd8;
+      --highlight:#ff4444;
+      font-family: 'Inter', system-ui;
+    }
+    *{box-sizing:border-box;}
+    html,body{height:100%;margin:0;background:var(--bg);color:#e9e8ee;}
+    .app{display:flex;min-height:100vh;}
+    .sidebar{width:260px;background:linear-gradient(180deg,#0f0e10 0%, #1b1620 100%);padding:24px 18px;border-right:1px solid rgba(255,255,255,0.02);}
+    .logo{display:flex;align-items:center;margin-bottom:18px;}
+    .logo img{width:40px;height:40px;margin-right:10px;}
+    .logo span{font-weight:800;color:#cfc7ff;font-size:16px;letter-spacing:1px;}
+    .menu{margin-top:12px;}
+    .menu a{display:block;padding:12px 10px;border-radius:10px;color:var(--muted);text-decoration:none;margin-bottom:6px;}
+    .menu a.active{background:linear-gradient(90deg,var(--accent),#3b2aa3);color:#fff;}
+    .menu .section-title{font-size:12px;color:var(--muted);text-transform:uppercase;margin:18px 0 8px;}
+    .main{flex:1;padding:30px 36px;overflow:auto;}
+    .header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;}
+    .header h1{margin:0;font-size:22px;}
+    .header .profile{display:flex;align-items:center;cursor:pointer;}
+    .header .profile img{width:40px;height:40px;border-radius:50%;margin-right:10px;}
+    .header .profile span{font-weight:600;color:#fff;}
+    .filter-buttons{margin-top:20px;display:flex;gap:12px;}
+    .filter-buttons button{padding:8px 16px;background:linear-gradient(90deg,#6f4bd8,#3b2aa3);border:none;border-radius:8px;color:#fff;cursor:pointer;font-weight:600;transition:0.3s;}
+    .filter-buttons button.active{background:#3b2aa3;}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));grid-gap:18px;margin-top:18px;}
+    .member{display:flex;flex-direction:column;align-items:center;padding:12px;background:var(--card);border-radius:12px;text-align:center;transition:0.2s;}
+    .member img{width:80px;height:80px;border-radius:50%;margin-bottom:8px;object-fit:cover;}
+    .member .faction-name{font-weight:700;color:#6f4bd8;margin-bottom:6px;}
+    .member .player-name{font-weight:700;font-size:16px;margin-bottom:4px;}
+    .member .player-rank{font-size:14px;color:#7d7a89;}
+    .member.sindicat{border:2px solid var(--highlight); background:rgba(255,68,68,0.15);}
+    .profile-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);display:none;align-items:center;justify-content:center;z-index:999;}
+    .profile-content{background:var(--card);padding:20px;border-radius:14px;width:320px;}
+    .profile-content h2{margin-top:0;margin-bottom:12px;}
+    .profile-content input{width:100%;margin-bottom:10px;padding:8px;border-radius:8px;border:1px solid #333;background:#1f1b24;color:#fff;}
+    .profile-content button{padding:8px 12px;background:linear-gradient(90deg,#6f4bd8,#3b2aa3);color:#fff;border:none;border-radius:8px;cursor:pointer;}
+    @media(max-width:960px){
+      .sidebar{display:none;}
+      .grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr));}
+      .member img{margin-bottom:6px;}
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="logo">
+      <img src="logo.png" alt="PHX Logo">
+      <span>PHX ROMANIA ROLEPLAY</span>
+    </div>
+    <div class="menu">
+      <div class="section-title">Menu</div>
+      <a href="index.html">Home</a>
+      <a href="https://discord.gg/vUtd9JCypQ" target="_blank">Discord</a>
+      <a href="regulamente.html">Regulamente</a>
+      <a href="members.html">Members</a>
+      <a href="staff.html">Staff</a>
+      <a class="active" href="factiuni.html">Factiuni</a>
+      <a href="shop.html">Shop</a>
+      <a href="tickets.html">Tickets</a>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="header">
+      <h1>Factiuni</h1>
+      <div class="profile" id="profileBtn">
+        <img id="headerAvatar" src="logo.png" alt="Avatar">
+        <span id="headerName">Loading...</span>
+      </div>
+    </div>
+
+    <div class="filter-buttons">
+      <button id="legalBtn" class="active">Legale</button>
+      <button id="illegalBtn">Ilegale</button>
+    </div>
+
+    <div class="grid" id="factionsList"></div>
+  </main>
+</div>
+
+<div class="profile-overlay" id="profileOverlay">
+  <div class="profile-content">
+    <h2>Profilul meu</h2>
+    <input type="text" id="profileName" placeholder="Nume">
+    <input type="text" id="profileServerID" placeholder="ID Server">
+    <input type="text" id="profileAvatar" placeholder="Link Poza">
+    <button id="saveProfileBtn">Salvează</button>
+    <button id="logoutBtn" style="margin-top:10px;background:red;">Logout</button>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
+import { getDatabase, ref, set, get } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCNmtNk-qgYbTBFtz-fvT4lqCiKaUhIwZU",
+  authDomain: "phxrp-a6554.firebaseapp.com",
+  databaseURL: "https://phxrp-a6554-default-rtdb.firebaseio.com",
+  projectId: "phxrp-a6554",
+  storageBucket: "phxrp-a6554.appspot.com",
+  messagingSenderId: "413786501080",
+  appId: "1:413786501080:web:34a391f66e58acc45a8cad",
+  measurementId: "G-K935NMKEZL"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth();
+const db = getDatabase(app);
+
+const profileOverlay = document.getElementById("profileOverlay");
+const profileBtn = document.getElementById("profileBtn");
+const headerName = document.getElementById("headerName");
+const headerAvatar = document.getElementById("headerAvatar");
+const profileName = document.getElementById("profileName");
+const profileServerID = document.getElementById("profileServerID");
+const profileAvatar = document.getElementById("profileAvatar");
+const saveProfileBtn = document.getElementById("saveProfileBtn");
+const logoutBtn = document.getElementById("logoutBtn");
+const factionsList = document.getElementById("factionsList");
+const legalBtn = document.getElementById("legalBtn");
+const illegalBtn = document.getElementById("illegalBtn");
+
+const factions = {
+  Legale:[
+    {faction:"Politie", players:[
+      {name:"Jucator", rank:"Chestor General", avatar:"https://media.discordapp.net/attachments/1153942954650648657/1442182328251318322/logo.png?ex=69248075&is=69232ef5&hm=48dc9214f7ce73698d039eeca7bb8140c95f1e2b4fb028a38481db1e9929e8ee&=&format=webp&quality=lossless"},
+      {name:"Jucator", rank:"Chestor", avatar:"https://media.discordapp.net/attachments/1153942954650648657/1442182328251318322/logo.png?ex=69248075&is=69232ef5&hm=48dc9214f7ce73698d039eeca7bb8140c95f1e2b4fb028a38481db1e9929e8ee&=&format=webp&quality=lossless"}
+    ]},
+    {faction:"Medici", players:[
+      {name:"Cojo", rank:"Medic General", avatar:"https://media.discordapp.net/attachments/1153942954650648657/1442182328251318322/logo.png?ex=69248075&is=69232ef5&hm=48dc9214f7ce73698d039eeca7bb8140c95f1e2b4fb028a38481db1e9929e8ee&=&format=webp&quality=lossless"}
+    ]}
+  ],
+  Ilegale:[
+    {faction:"Sindicat", players:[
+      {name:"NotPhade", rank:"Lider", avatar:"https://media.discordapp.net/attachments/1153942954650648657/1442158545520037968/boruto.png?ex=69246a4f&is=692318cf&hm=b744411967af8866996e88587929222a4a8ba068200449e9ce7f189aa1709900&=&format=webp&quality=lossless&width=640&height=960"},
+    ]},
+    {faction:"Altele", players:[
+      {name:"Grove Street --> Jucator", rank:"Lider", avatar:"https://cdn.discordapp.com/attachments/1439070293132972093/1442181296053944360/logo.png?ex=69247f7f&is=69232dff&hm=ecfb5f448adf0954de5cd4858327ec656a8a812d6b52961d79923aa86bbbf3ce&"},
+      {name:"Ballas --> Jucator", rank:"Lider", avatar:"https://cdn.discordapp.com/attachments/1439070293132972093/1442181296053944360/logo.png?ex=69247f7f&is=69232dff&hm=ecfb5f448adf0954de5cd4858327ec656a8a812d6b52961d79923aa86bbbf3ce&"},
+      {name:"Crips --> Jucator", rank:"Lider", avatar:"https://cdn.discordapp.com/attachments/1439070293132972093/1442181296053944360/logo.png?ex=69247f7f&is=69232dff&hm=ecfb5f448adf0954de5cd4858327ec656a8a812d6b52961d79923aa86bbbf3ce&"},
+      {name:"Los Vagos --> Jucator ", rank:"Lider", avatar:"https://cdn.discordapp.com/attachments/1439070293132972093/1442181296053944360/logo.png?ex=69247f7f&is=69232dff&hm=ecfb5f448adf0954de5cd4858327ec656a8a812d6b52961d79923aa86bbbf3ce&"},
+      {name:"Nortenos --> Jucator", rank:"Lider", avatar:"https://cdn.discordapp.com/attachments/1439070293132972093/1442181296053944360/logo.png?ex=69247f7f&is=69232dff&hm=ecfb5f448adf0954de5cd4858327ec656a8a812d6b52961d79923aa86bbbf3ce&"},
+      {name:"Corleone --> Jucator", rank:"Lider", avatar:"https://cdn.discordapp.com/attachments/1439070293132972093/1442181296053944360/logo.png?ex=69247f7f&is=69232dff&hm=ecfb5f448adf0954de5cd4858327ec656a8a812d6b52961d79923aa86bbbf3ce&"},
+      {name:"Sons Of Anarchy --> Jucator", rank:"Lider", avatar:"https://cdn.discordapp.com/attachments/1439070293132972093/1442181296053944360/logo.png?ex=69247f7f&is=69232dff&hm=ecfb5f448adf0954de5cd4858327ec656a8a812d6b52961d79923aa86bbbf3ce&"},
+      {name:"Bratva --> Jucator", rank:"Lider", avatar:"https://cdn.discordapp.com/attachments/1439070293132972093/1442181296053944360/logo.png?ex=69247f7f&is=69232dff&hm=ecfb5f448adf0954de5cd4858327ec656a8a812d6b52961d79923aa86bbbf3ce&"},
+      {name:"Barracuda --> Jucator", rank:"Lider", avatar:"https://cdn.discordapp.com/attachments/1439070293132972093/1442181296053944360/logo.png?ex=69247f7f&is=69232dff&hm=ecfb5f448adf0954de5cd4858327ec656a8a812d6b52961d79923aa86bbbf3ce&"},
+      {name:"Synaxs --> Jucator", rank:"Lider", avatar:"https://cdn.discordapp.com/attachments/1439070293132972093/1442181296053944360/logo.png?ex=69247f7f&is=69232dff&hm=ecfb5f448adf0954de5cd4858327ec656a8a812d6b52961d79923aa86bbbf3ce&"},
+      {name:"Bynvada --> Jucator", rank:"Lider", avatar:"https://cdn.discordapp.com/attachments/1439070293132972093/1442181296053944360/logo.png?ex=69247f7f&is=69232dff&hm=ecfb5f448adf0954de5cd4858327ec656a8a812d6b52961d79923aa86bbbf3ce&"}
+    ]}
+  ]
+};
+
+onAuthStateChanged(auth,user=>{
+  if(!user){ window.location.href="index.html"; }
+  else{
+    loadProfile(user.uid);
+    showFaction("Legale");
+  }
+});
+
+profileBtn.addEventListener("click",()=>{ profileOverlay.style.display="flex"; });
+logoutBtn.addEventListener("click",()=>{ signOut(auth).then(()=>window.location.href="index.html"); });
+saveProfileBtn.addEventListener("click",()=>{
+  const uid = auth.currentUser.uid;
+  set(ref(db,'users/'+uid),{
+    name: profileName.value,
+    avatar: profileAvatar.value,
+    serverID: profileServerID.value,
+    email: auth.currentUser.email
+  }).then(()=>{ alert("Profil salvat!"); profileOverlay.style.display="none"; });
+});
+
+function loadProfile(uid){
+  get(ref(db,'users/'+uid)).then(snapshot=>{
+    if(snapshot.exists()){
+      const data = snapshot.val();
+      headerName.textContent = data.name || auth.currentUser.email;
+      headerAvatar.src = data.avatar || "logo.png";
+      profileName.value = data.name || "";
+      profileAvatar.value = data.avatar || "";
+      profileServerID.value = data.serverID || "";
+    }else{ headerName.textContent = auth.currentUser.email; }
+  });
+}
+
+function showFaction(type){
+  factionsList.innerHTML = "";
+
+  if(type==="Legale"){
+    factions.Legale.forEach(faction=>{
+      faction.players.forEach(player=>{
+        const div = document.createElement("div");
+        div.classList.add("member");
+        div.innerHTML = `<div class="faction-name">${faction.faction}</div><img src="${player.avatar}" alt="Avatar"><div class="player-name">${player.name}</div><div class="player-rank">${player.rank}</div>`;
+        factionsList.appendChild(div);
+      });
+    });
+  }else{
+    factions.Ilegale[0].players.forEach(player=>{
+      const div = document.createElement("div");
+      div.classList.add("member","sindicat");
+      div.innerHTML = `<div class="faction-name">Sindicat</div><img src="${player.avatar}" alt="Avatar"><div class="player-name">${player.name}</div><div class="player-rank">${player.rank}</div>`;
+      factionsList.appendChild(div);
+    });
+
+    factions.Ilegale[1].players.forEach(player=>{
+      const div = document.createElement("div");
+      div.classList.add("member");
+      div.innerHTML = `<div class="faction-name">Mafie</div><img src="${player.avatar}" alt="Avatar"><div class="player-name">${player.name}</div><div class="player-rank">${player.rank}</div>`;
+      factionsList.appendChild(div);
+    });
+  }
+
+  legalBtn.classList.toggle("active", type==="Legale");
+  illegalBtn.classList.toggle("active", type==="Ilegale");
+}
+
+legalBtn.addEventListener("click",()=>showFaction("Legale"));
+illegalBtn.addEventListener("click",()=>showFaction("Ilegale"));
+</script>
+</body>
+
+
+
+
+
