@@ -8,64 +8,84 @@
     <style>
         body {
             margin: 0;
-            font-family: Arial, sans-serif;
-            background-color: #1e1e1e;
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #0f0f0f;
             color: #fff;
             display: flex;
         }
         .sidebar {
-            width: 250px;
-            background-color: #111;
+            width: 260px;
+            background-color: #1a1a1a;
             height: 100vh;
             padding: 20px;
             display: flex;
             flex-direction: column;
             gap: 20px;
+            border-right: 2px solid #292929;
         }
         .logo {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #292929;
         }
         .logo img {
-            width: 40px;
-            height: 40px;
+            width: 45px;
+            height: 45px;
         }
         .nav a {
             text-decoration: none;
-            color: #fff;
-            padding: 10px;
+            color: #e0e0e0;
+            padding: 12px;
             display: block;
-            border-radius: 5px;
-            background-color: #222;
+            border-radius: 8px;
+            background-color: #232323;
+            font-weight: 500;
+            transition: 0.25s;
         }
         .nav a:hover {
-            background-color: #444;
+            background-color: #ff9800;
+            color: #000;
+            transform: translateX(5px);
         }
         .container {
-            padding: 20px;
+            padding: 25px;
             width: 100%;
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
+            gap: 25px;
         }
         .card {
-            background-color: #222;
+            background: linear-gradient(145deg, #1c1c1c, #111);
             padding: 20px;
-            border-radius: 10px;
+            border-radius: 15px;
+            box-shadow: 0px 0px 15px rgba(0,0,0,0.5);
+            transition: 0.3s;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0px 0px 25px rgba(255, 152, 0, 0.4);
         }
         .card h2 {
             margin-top: 0;
+            color: #ff9800;
+        }
+        ul li {
+            margin-bottom: 6px;
         }
         .top-player {
             display: flex;
             align-items: center;
-            gap: 10px;
-            margin-top: 10px;
+            gap: 12px;
+            margin-top: 12px;
+            background-color: #222;
+            padding: 10px;
+            border-radius: 10px;
         }
         .top-player img {
-            width: 40px;
-            height: 40px;
+            width: 45px;
+            height: 45px;
             border-radius: 50%;
         }
     </style>
