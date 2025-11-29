@@ -6,80 +6,89 @@
     <title>PHX Dashboard</title>
     <link rel="icon" type="image/png" href="logo.png">
     <style>
-        body {
+        :root {
+            --bg-dark: #0e0e0e;
+            --bg-sidebar: #151515;
+            --accent: #ff4d00;
+            --card-bg: #1a1a1a;
+            --text: #ffffff;
+        }
+        * {
             margin: 0;
-            font-family: 'Segoe UI', sans-serif;
-            background-color: #0f0f0f;
-            color: #fff;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Poppins", sans-serif;
+        }
+        body {
             display: flex;
+            background: var(--bg-dark);
+            color: var(--text);
         }
         .sidebar {
-            width: 260px;
-            background-color: #1a1a1a;
+            width: 250px;
             height: 100vh;
-            padding: 20px;
+            background: var(--bg-sidebar);
+            padding: 25px 15px;
             display: flex;
             flex-direction: column;
-            gap: 20px;
-            border-right: 2px solid #292929;
+            gap: 25px;
+            position: sticky;
+            top: 0;
         }
         .logo {
             display: flex;
             align-items: center;
             gap: 12px;
-            padding-bottom: 15px;
-            border-bottom: 2px solid #292929;
+            font-size: 20px;
+            font-weight: 600;
         }
         .logo img {
             width: 45px;
             height: 45px;
         }
         .nav a {
-            text-decoration: none;
-            color: #e0e0e0;
-            padding: 12px;
             display: block;
+            padding: 12px;
+            color: var(--text);
+            background: #222;
             border-radius: 8px;
-            background-color: #232323;
+            text-decoration: none;
             font-weight: 500;
             transition: 0.25s;
         }
         .nav a:hover {
-            background-color: #ff9800;
+            background: var(--accent);
             color: #000;
-            transform: translateX(5px);
+            transform: translateX(6px);
         }
         .container {
-            padding: 25px;
             width: 100%;
+            padding: 30px;
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 25px;
+            gap: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
         }
         .card {
-            background: linear-gradient(145deg, #1c1c1c, #111);
+            background: var(--card-bg);
             padding: 20px;
-            border-radius: 15px;
-            box-shadow: 0px 0px 15px rgba(0,0,0,0.5);
-            transition: 0.3s;
+            border-radius: 14px;
+            border: 2px solid #2b2b2b;
+            transition: 0.25s;
         }
         .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0px 0px 25px rgba(255, 152, 0, 0.4);
+            border-color: var(--accent);
+            transform: translateY(-4px);
         }
         .card h2 {
-            margin-top: 0;
-            color: #ff9800;
-        }
-        ul li {
-            margin-bottom: 6px;
+            margin-bottom: 10px;
+            color: var(--accent);
         }
         .top-player {
             display: flex;
             align-items: center;
-            gap: 12px;
-            margin-top: 12px;
-            background-color: #222;
+            gap: 10px;
+            margin-top: 10px;
+            background: #222;
             padding: 10px;
             border-radius: 10px;
         }
@@ -94,7 +103,7 @@
     <div class="sidebar">
         <div class="logo">
             <img src="logo.png" alt="logo">
-            <h3>PHX</h3>
+            PHX Server
         </div>
         <div class="nav">
             <a href="index.html">Home</a>
@@ -108,8 +117,8 @@
     <div class="container">
         <div class="card">
             <h2>Eveniment Activ</h2>
-            <h3>Colinde de Crăciun 🎄</h3>
-            <p>Sărbătorește Crăciunul pe PHX! Mergi prin oraș și colindă casele pentru recompense festive și surprize speciale! 🎁✨</p>
+            <p><strong>Colinde de Crăciun 🎄</strong><br>
+            Sărbătorește Crăciunul pe PHX! Mergi prin oraș și colindă casele pentru recompense festive și surprize speciale! 🎁✨</p>
         </div>
 
         <div class="card">
@@ -124,9 +133,9 @@
 
         <div class="card">
             <h2>Top 3 Jucători</h2>
-            <div class="top-player"><img src="logo.png"><span>Nume 1 - 120h</span></div>
-            <div class="top-player"><img src="logo.png"><span>Nume 2 - 110h</span></div>
-            <div class="top-player"><img src="logo.png"><span>Nume 3 - 90h</span></div>
+            <div class="top-player"><img src="logo.png"><span>Jucător 1 - 120h</span></div>
+            <div class="top-player"><img src="logo.png"><span>Jucător 2 - 110h</span></div>
+            <div class="top-player"><img src="logo.png"><span>Jucător 3 - 90h</span></div>
         </div>
 
         <div class="card">
